@@ -1,0 +1,15 @@
+﻿@model VendingMachineBackend.Models.Good
+
+@{
+    ViewBag.Title = $"{Model.Name} - Подробно";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div>
+    ID: @Model.GoodId, Название: @Model.Name<br>
+    Поставщик: @Model.Supplier.Name<br>
+    Цена продажи: @Model.SaleCost ₽, Цена закупки: @Model.PurchaseCost ₽ <br/>
+    @* ReSharper disable once Html.PathError *@
+    <img src="/Images/@Model.IconPath" alt="Good image" />
+</div>

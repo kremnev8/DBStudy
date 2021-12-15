@@ -1,0 +1,58 @@
+﻿@model System.Collections.Generic.List<VendingMachineBackend.Models.Delivery>
+
+@{
+    ViewBag.Title = "Доставки";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<table id="machines">
+    <tr>
+        <th>ID Доставки</th>
+        <th>ID автомата</th>
+        <th>ID Сотрудника</th>
+        <th>Дата доставки</th>
+        <th>Изъято наличных</th>
+    </tr>
+    @foreach (var u in Model)
+    {
+        RouteValueDictionary employee = new RouteValueDictionary {{"employeeId", u.EmployeeId}};
+        RouteValueDictionary machine = new RouteValueDictionary {{"machineId", u.MachineId}};
+        RouteValueDictionary delDetail = new RouteValueDictionary {{"deliveryId", u.DeliveryId}};
+        <tr>
+            <td>@Html.ActionLink(@u.DeliveryId.ToString(), "Detail", "Delivery", delDetail, new RouteValueDictionary())</td>
+            <td>@Html.ActionLink(@u.MachineId.ToString(), "Detail", "Machine", machine, new RouteValueDictionary())</td>
+            <td>@Html.ActionLink(@u.EmployeeId.ToString(), "Detail", "Employee", employee, new RouteValueDictionary())</td>
+            <td>@u.DeliveryDate</td>
+            <td>@u.WithdrawnMoney</td>
+        </tr>
+    }
+</table>
+<br>
+
+<div style="width: 100%; float: left;">
+    
+    @if ((int) ViewBag.page - 1 > 0)
+        {
+            RouteValueDictionary prev = new RouteValueDictionary {{"page", (int) ViewBag.page - 1}, {"limit", (int) ViewBag.limit}};
+            
+            <div>
+                @using (Html.BeginForm("Index", "Delivery", prev, FormMethod.Post))
+                {
+                    <input type="submit" value="Предыдущая страница" class="btn btn-primary" style="float:left;"/>
+                }
+            </div>
+        }
+    
+    @if ((int) ViewBag.page + 1 <= (int) ViewBag.maxPage)
+    {
+        RouteValueDictionary next = new RouteValueDictionary {{"page", (int) ViewBag.page + 1}, {"limit", (int) ViewBag.limit}};
+
+        <div>
+            @using (Html.BeginForm("Index", "Delivery", next, FormMethod.Post))
+            {
+                <input type="submit" value="Следующая страница" class="btn btn-primary" style="float:right;"/>
+            }
+        </div>
+    }
+</div>

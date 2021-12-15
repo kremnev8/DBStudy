@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "Домашняя страница";
+}
+
+<h2>Доманшняя страница</h2>
+
+@if (Request.IsAuthenticated)
+{
+
+    <span>Welcome @Html.Encode(User.Identity.Name) </span>
+}
+else
+{
+
+    @Html.ActionLink("Войти", "Login", "Account")<br />
+
+    @Html.ActionLink("Зарегистрироваться", "Register", "Account")
+}

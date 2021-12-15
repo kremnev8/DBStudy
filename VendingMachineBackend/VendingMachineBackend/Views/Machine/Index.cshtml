@@ -1,0 +1,88 @@
+﻿@using System.Security.Claims
+@using VendingMachineBackend.Models
+@model List<VendingMachineBackend.Models.VendingMachine>
+
+@{
+    ViewBag.Title = "Vending Machines";
+}
+
+<script type="text/javascript">
+        function Redirect() {
+            location.href =  '/Machine/Add';
+        };
+</script>
+
+<script type="text/javascript">
+         function copyToClipboard(text) {
+             if (window.clipboardData && window.clipboardData.setData) {
+                 // Internet Explorer-specific code path to prevent textarea being shown while dialog is visible.
+                 return window.clipboardData.setData("Text", text);
+         
+             }
+             else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+                 var textarea = document.createElement("textarea");
+                 textarea.textContent = text;
+                 textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in Microsoft Edge.
+                 document.body.appendChild(textarea);
+                 textarea.select();
+                 try {
+                     return document.execCommand("copy");  // Security exception may be thrown by some browsers.
+                 }
+                 catch (ex) {
+                     console.warn("Copy to clipboard failed.", ex);
+                     return false;
+                 }
+                 finally {
+                     document.body.removeChild(textarea);
+                 }
+             }
+         }
+</script>
+
+<h2>Vending Machines</h2>
+
+<table id="machines">
+    <tr>
+        <th>Machine ID</th>
+        <th>Address</th>
+        <th>Access Token</th>
+    </tr>
+    @foreach (var u in Model)
+    {
+        RouteValueDictionary dictionary = new RouteValueDictionary {{"machineId", u.MachineId}};
+        <tr>
+            <td>
+                @Html.ActionLink(u.MachineId.ToString(), "Detail", "Machine", dictionary, new RouteValueDictionary())<br />
+            </td>
+            <td>@u.Address</td>
+            <td>
+                @if (u.AccessToken.IsEmpty())
+                {
+                    <div>
+                        @using (Html.BeginForm("Generate", "Machine", dictionary))
+                        {
+                            <input type="submit" value="Генерировать" class="btn btn-primary"/>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <input type="submit" value="Скопировать" class="btn btn-primary" OnClick="copyToClipboard('@u.AccessToken')" />
+                }
+            </td>
+        </tr>
+    }
+</table>
+
+@if (Request.IsAuthenticated)
+{
+    ClaimsPrincipal user = Context.GetOwinContext().Authentication.User;
+    Employee employee = VendingBusinessContext.Create().employee.First(employee1 => employee1.Email.Equals(user.Identity.Name));
+
+    if (employee.getPermission() == Permission.Manager || employee.getPermission() == Permission.Admin)
+    {
+        <div style="padding-top: 15px;">
+            <button id="addButton" OnClick="Redirect()" class="btn btn-primary" style="position: absolute;left: 50%;">Добавить</button>
+        </div>
+    }
+}

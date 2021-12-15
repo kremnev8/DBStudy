@@ -1,0 +1,59 @@
+﻿@model VendingMachineBackend.Models.VendingMachine
+
+@{
+    ViewBag.Title = $"Торговый автомат №{Model.MachineId}";
+}
+
+<script type="text/javascript">
+         function copyToClipboard(text) {
+             if (window.clipboardData && window.clipboardData.setData) {
+                 // Internet Explorer-specific code path to prevent textarea being shown while dialog is visible.
+                 return window.clipboardData.setData("Text", text);
+         
+             }
+             else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+                 var textarea = document.createElement("textarea");
+                 textarea.textContent = text;
+                 textarea.style.position = "fixed";  // Prevent scrolling to bottom of page in Microsoft Edge.
+                 document.body.appendChild(textarea);
+                 textarea.select();
+                 try {
+                     return document.execCommand("copy");  // Security exception may be thrown by some browsers.
+                 }
+                 catch (ex) {
+                     console.warn("Copy to clipboard failed.", ex);
+                     return false;
+                 }
+                 finally {
+                     document.body.removeChild(textarea);
+                 }
+             }
+         }
+</script>
+
+<h2>Vending Machine №@Model.MachineId</h2>
+<div>
+    Address: @Model.Address<br>
+    <input type="submit" value="Копировать токен" class="btn btn-primary" OnClick="copyToClipboard('@Model.AccessToken')" />
+</div>
+
+<table id="machines">
+    <tr>
+        <th>Slot Position</th>
+        <th>Good ID</th>
+        <th>Good name</th>
+        <th>Count</th>
+    </tr>
+    @foreach (var u in Model.slots)
+    {
+        RouteValueDictionary dictionary = new RouteValueDictionary {{"goodId", u.Good.GoodId}};
+        <tr>
+            <td>@u.SlotPosition</td>
+            <td>@u.Good.GoodId</td>
+            <td>@Html.ActionLink(u.Good.Name, "Detail", "Good", dictionary, new RouteValueDictionary())</td>
+            <td>@u.GoodCount</td>
+        </tr>
+    }
+</table>
+
+

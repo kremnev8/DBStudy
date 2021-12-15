@@ -1,0 +1,90 @@
+﻿@using VendingMachineBackend.Models
+@model System.Collections.Generic.List<VendingMachineBackend.Models.Purchase>
+
+@{
+    ViewBag.Title = "Продажи";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<script>
+function myFunction() {
+  // Declare variables
+  var input, filter, table, tr, td, i;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("machines");
+  tr = table.getElementsByTagName("tr");
+
+  // Loop through all table rows, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[4];
+    if (td) {
+      if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
+</script>
+
+<input type="text" id="myInput" onkeyup="myFunction()" placeholder="Поиск по имени товара">
+
+<table id="machines">
+    <tr>
+        <th>Purchase ID</th>
+        <th>Machine ID</th>
+        <th>Slot Position</th>
+        <th>Purchase Date</th>
+        <th>Good Name</th>
+        <th>Sold at</th>
+    </tr>
+    @foreach (var u in Model)
+    {
+        RouteValueDictionary dictionary = new RouteValueDictionary {{"goodId", u.GoodId}};
+        RouteValueDictionary dictionary1 = new RouteValueDictionary {{"machineId", u.MachineId}};
+        <tr>
+            <td>@u.PurchaseId</td>
+            <td>@Html.ActionLink(@u.MachineId.ToString(), "Detail", "Machine", dictionary1, new RouteValueDictionary())</td>
+            <td>@u.SlotPosition</td>
+            <td>@u.PurchaseTime</td>
+            <td>@Html.ActionLink(@u.Good.Name, "Detail", "Good", dictionary, new RouteValueDictionary())</td>
+            <td>@u.Good.SaleCost</td>
+        </tr>
+    }
+</table>
+
+<div>
+    Продано всего на сумму: @Model.Select(purchase => purchase.Good.SaleCost).Sum();
+</div>
+<br>
+
+<div style="width: 100%; float: left;">
+    
+    @if ((int) ViewBag.page - 1 > 0)
+        {
+            RouteValueDictionary prev = new RouteValueDictionary {{"page", (int) ViewBag.page - 1}, {"limit", (int) ViewBag.limit}};
+            
+            <div>
+                @using (Html.BeginForm("Index", "Purchase", prev, FormMethod.Post))
+                {
+                    <input type="submit" value="Предыдущая страница" class="btn btn-primary" style="float:left;"/>
+                }
+            </div>
+        }
+    
+    @if ((int) ViewBag.page + 1 <= (int) ViewBag.maxPage)
+    {
+        RouteValueDictionary next = new RouteValueDictionary {{"page", (int) ViewBag.page + 1}, {"limit", (int) ViewBag.limit}};
+
+        <div>
+            @using (Html.BeginForm("Index", "Purchase", next, FormMethod.Post))
+            {
+                <input type="submit" value="Следующая страница" class="btn btn-primary" style="float:right;"/>
+            }
+        </div>
+    }
+</div>
+

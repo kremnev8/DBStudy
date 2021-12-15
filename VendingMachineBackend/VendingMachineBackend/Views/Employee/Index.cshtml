@@ -1,0 +1,28 @@
+﻿@model System.Collections.Generic.List<VendingMachineBackend.Models.Employee>
+
+@{
+    ViewBag.Title = "Сотрудники";
+}
+
+<h2>Сотрудники</h2>
+
+<table id="machines">
+    <tr>
+        <th>Employee ID</th>
+        <th>Full Name</th>
+        <th>Salary</th>
+        <th>Email</th>
+        <th>Permission</th>
+    </tr>
+    @foreach (var u in Model)
+    {
+        RouteValueDictionary dictionary = new RouteValueDictionary {{"employeeId", u.EmployeeId}};
+        <tr>
+            <td>@u.EmployeeId</td>
+            <td>@Html.ActionLink(u.FullName, "Detail", "Employee", dictionary, new RouteValueDictionary())</td>
+            <td>@u.Salary</td>
+            <td>@u.Email</td>
+            <td>@u.getPermission().ToString()</td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,31 @@
+﻿@model VendingMachineBackend.Models.Delivery
+
+@{
+    ViewBag.Title = $"{Model.DeliveryId} - Подробно";
+}
+
+<h2>@ViewBag.Title</h2>
+
+Доставка №@Model.DeliveryId совершенная @Model.DeliveryDate <br/>
+Сотрудник: @Model.EmployeeId <br/>
+Изъято: @Model.WithdrawnMoney <br/>
+
+Доставленные товары: <br/>
+<table id="machines">
+    <tr>
+        <th>ID</th>
+        <th>Слот</th>
+        <th>Название товара</th>
+        <th>Количество</th>
+    </tr>
+    @foreach (var u in Model.contents)
+    {
+        RouteValueDictionary good = new RouteValueDictionary {{"goodId", u.GoodId}};
+        <tr>
+            <td>@u.ItemId</td>
+            <td>@u.SlotPosition</td>
+            <td>@Html.ActionLink(@u.Good.Name, "Detail", "Good", good, new RouteValueDictionary())</td>
+            <td>@u.GoodCount</td>
+        </tr>
+    }
+</table>

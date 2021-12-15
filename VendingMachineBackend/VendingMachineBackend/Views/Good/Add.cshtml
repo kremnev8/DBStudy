@@ -1,0 +1,66 @@
+﻿@using VendingMachineBackend.Models
+
+@model VendingMachineBackend.ViewModel.GoodAddViewModel
+
+
+@{
+    ViewBag.Title = "Добавить новый товар";
+}
+
+<h2>Add new Good</h2>
+
+<div>
+    @using (Html.BeginForm("SaveNewGood", "Good", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        VendingBusinessContext context = VendingBusinessContext.Create();
+        List<Supplier> suppliers = context.supplier.ToList();
+        
+        <div style="color:red;">@Html.ValidationSummary()</div>
+        <div class="row">
+            <!--Show details are saved successfully message-->
+            <div class="col-lg-12">@ViewBag.Message</div>
+        </div><br/>
+        <div class="row">
+            <div class="col-lg-2"><label for="Name">Название</label></div>
+            <div class="col-lg-10">@Html.TextBoxFor(a => a.Name, new { @class = "form-control" })</div>
+        </div><br />
+              
+        <div class="row">
+            <div class="col-lg-2"><label for="SuppliderId">Поставщик</label></div>
+            <div class="col-lg-10">@Html.DropDownListFor(model => model.SuppliderId, suppliers.Select(supplier => new SelectListItem()
+                     {
+                         Text = supplier.Name,
+                         Value = supplier.SupplierId.ToString()
+                     }), new {@class = "form-control"})
+            </div>
+        </div><br />
+        <div class="row">
+            <div class="col-lg-2"><label for="PurchaseCost">Цена закупки</label></div>
+            <div class="col-lg-10">
+                <div class="input-icon input-icon-right" style="max-width: 280px">
+                @Html.TextBoxFor(a => a.PurchaseCost, new {@class = "form-control", placeholder = "0.00"})
+                <i>₽</i>
+                </div>
+            </div>
+        </div><br />
+        <div class="row">
+            <div class="col-lg-2"><label for="SaleCost">Цена продажи</label></div>
+            <div class="col-lg-10">
+                <div class="input-icon input-icon-right" style="max-width: 280px">
+                @Html.TextBoxFor(a => a.SaleCost, new {@class = "form-control", placeholder = "0.00"})
+                <i>₽</i>
+                </div>
+            </div>
+        </div><br />
+              
+        <div class="row">
+            <div class="col-lg-2"><label for="GoodIcon">Изображение</label></div>
+            <div class="col-lg-10">
+                @Html.TextBoxFor(m => m.GoodIcon, new { @type = "file" })
+            </div>
+        </div><br />  
+              
+        <input type="submit" value="Добавить" class="btn btn-primary" />
+    }
+
+</div>

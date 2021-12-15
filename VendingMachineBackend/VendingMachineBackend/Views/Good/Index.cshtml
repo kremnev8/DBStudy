@@ -1,0 +1,76 @@
+﻿@using System.Security.Claims
+@using VendingMachineBackend.Models
+@model List<VendingMachineBackend.Models.Good>
+
+@{
+    ViewBag.Title = "Товары";
+}
+
+<script type="text/javascript">
+        function Redirect() {
+            location.href =  '/Good/Add';
+        }
+</script>
+
+
+<script>
+function myFunction() {
+  // Declare variables
+  var input, filter, table, tr, td, i;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("machines");
+  tr = table.getElementsByTagName("tr");
+
+  // Loop through all table rows, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[1];
+    if (td) {
+      if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }
+  }
+}
+</script>
+
+<h2>Goods</h2>
+
+<input type="text" id="myInput" onkeyup="myFunction()" placeholder="Поиск по имени товара">
+
+
+<table id="machines">
+    <tr>
+        <th>Good ID</th>
+        <th>Good name</th>
+        <th>Supplier name</th>
+        <th>Sale cost</th>
+        <th>Purchase cost</th>
+    </tr>
+    @foreach (var u in Model)
+    {
+        RouteValueDictionary dictionary = new RouteValueDictionary {{"goodId", u.GoodId}};
+        <tr>
+            <td>@u.GoodId</td>
+            <td>@Html.ActionLink(u.Name, "Detail", "Good", dictionary, new RouteValueDictionary())</td>
+            <td>@u.Supplier.Name</td>
+            <td>@u.SaleCost</td>
+            <td>@u.PurchaseCost</td>
+        </tr>
+    }
+</table>
+
+@if (Request.IsAuthenticated)
+{
+    ClaimsPrincipal user = Context.GetOwinContext().Authentication.User;
+    Employee employee = VendingBusinessContext.Create().employee.First(employee1 => employee1.Email.Equals(user.Identity.Name));
+
+    if (employee.getPermission() == Permission.Manager || employee.getPermission() == Permission.Admin)
+    {
+        <div style="padding-top: 15px;">
+            <button id="addButton" OnClick="Redirect()" class="btn btn-primary" style="position: absolute;left: 50%;">Добавить</button>
+        </div>
+    }
+}
